@@ -13,3 +13,13 @@ Everything here is plain files you can read before using. No credentials, no per
 New box or skin? Add a folder under `devices/` or next to `arctic-fuse-3/` and link it in the table above.
 
 License: MIT, see [`LICENSE`](LICENSE).
+
+## Keeping it clean (for contributors, and for me)
+This repo is public, so a pre-commit hook blocks IP addresses, MAC addresses, passwords/tokens, private keys, email addresses, home-directory paths, credentials in URLs and files like `guisettings.xml`. Enable it once after cloning:
+
+```sh
+git config core.hooksPath .githooks
+.githooks/pre-commit --all     # scan every tracked file
+```
+
+Put strings that must never be published (your username, hostnames) in the untracked file `.git/secret-denylist`, one per line. A false positive can be allowed by adding `secret-ok` on that line. Needs only `bash` and `grep`.
