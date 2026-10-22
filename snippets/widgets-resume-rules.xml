@@ -1,0 +1,19 @@
+        <!-- AM9PRO-RESUME (2026-10-15): click on the In-Progress rows = resume directly -->
+        <rule>
+            <condition>{item_path}==special://skin/extras/playlists/InProgressMovies.xsp</condition>
+            <value><![CDATA[
+                <onclick>PlayMedia($ESCINFO[ListItem.FileNameAndPath],resume)</onclick>
+            ]]></value>
+        </rule>
+        <rule>
+            <condition>{item_path}==special://skin/extras/playlists/NewMovies.xsp</condition>
+            <value><![CDATA[
+                <onclick>PlayMedia($ESCINFO[ListItem.FileNameAndPath],resume)</onclick>
+            ]]></value>
+        </rule>
+        <rule>
+            <condition>{item_path}==special://skin/extras/playlists/InProgressEpisodes.xsp</condition>
+            <value><![CDATA[
+                <onclick>PlayMedia($ESCINFO[ListItem.FileNameAndPath],resume)</onclick>
+            ]]></value>
+        </rule>

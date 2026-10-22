@@ -1,0 +1,125 @@
+        <!-- AM9PRO-SORT: visible sort + order buttons above the poster wall (movies / shows) -->
+        <control type="group">
+            <visible>[Container.Content(movies) | Container.Content(tvshows)] + $EXP[View_Mode_Wall_Expression] + !$EXP[Exp_InfoDialogs] + !Window.IsActive(1171) + !Window.IsActive(1180)</visible>
+            <top>228</top>
+            <right>80</right>
+            <width>400</width>
+            <height>56</height>
+            <!-- Sort type: opens Kodi's own sort list -->
+            <control type="button" id="6101">
+                <right>90</right>
+                <width>310</width>
+                <height>56</height>
+                <label>$VAR[Label_SortMethod]</label>
+                <font>font_main_bold</font>
+                <textcolor>dialog_fg_70</textcolor>
+                <focusedcolor>ff000000</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>40</textoffsetx>
+                <texturenofocus colordiffuse="40ffffff" border="20">common/white.png</texturenofocus>
+                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="20">common/white.png</texturefocus>
+                <onright>6102</onright>
+                <ondown>SetFocus($VAR[Action_View_ContainerID])</ondown>
+                <onup>6101</onup>
+                <onleft>6101</onleft>
+                <onclick>SendClick($VAR[Action_CurrentMediaWindow],3)</onclick>
+            </control>
+            <!-- Order: ascending / descending -->
+            <control type="button" id="6102">
+                <right>0</right>
+                <width>70</width>
+                <height>56</height>
+                <label></label>
+                <font>font_main_bold</font>
+                <textcolor>dialog_fg_70</textcolor>
+                <focusedcolor>ff000000</focusedcolor>
+                <align>center</align>
+                <aligny>center</aligny>
+                <textoffsetx>0</textoffsetx>
+                <texturenofocus colordiffuse="40ffffff" border="20">common/white.png</texturenofocus>
+                <texturefocus colordiffuse="$VAR[ColorHighlight]" border="20">common/white.png</texturefocus>
+                <onleft>6101</onleft>
+                <ondown>SetFocus($VAR[Action_View_ContainerID])</ondown>
+                <onup>6102</onup>
+                <onright>6102</onright>
+                <onclick>SendClick($VAR[Action_CurrentMediaWindow],4)</onclick>
+            </control>
+            <!-- icons: sort glyph, arrow up (ascending) / arrow down (descending) -->
+            <control type="label">
+                <left>20</left>
+                <top>0</top>
+                <width>40</width>
+                <height>56</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font_main_iconic</font>
+                <label>&#xf0dc;</label>
+                <textcolor>dialog_fg_70</textcolor>
+                <visible>!Control.HasFocus(6101)</visible>
+            </control>
+            <control type="label">
+                <left>20</left>
+                <top>0</top>
+                <width>40</width>
+                <height>56</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font_main_iconic</font>
+                <label>&#xf0dc;</label>
+                <textcolor>ff000000</textcolor>
+                <visible>Control.HasFocus(6101)</visible>
+            </control>
+            <control type="label">
+                <left>330</left>
+                <top>0</top>
+                <width>70</width>
+                <height>56</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font_main_iconic</font>
+                <label>&#xf062;</label>
+                <textcolor>dialog_fg_70</textcolor>
+                <visible>!Control.HasFocus(6102)</visible>
+                <visible>!Container.SortDirection(Descending)</visible>
+            </control>
+            <control type="label">
+                <left>330</left>
+                <top>0</top>
+                <width>70</width>
+                <height>56</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font_main_iconic</font>
+                <label>&#xf062;</label>
+                <textcolor>ff000000</textcolor>
+                <visible>Control.HasFocus(6102)</visible>
+                <visible>!Container.SortDirection(Descending)</visible>
+            </control>
+            <control type="label">
+                <left>330</left>
+                <top>0</top>
+                <width>70</width>
+                <height>56</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font_main_iconic</font>
+                <label>&#xf063;</label>
+                <textcolor>dialog_fg_70</textcolor>
+                <visible>!Control.HasFocus(6102)</visible>
+                <visible>Container.SortDirection(Descending)</visible>
+            </control>
+            <control type="label">
+                <left>330</left>
+                <top>0</top>
+                <width>70</width>
+                <height>56</height>
+                <align>center</align>
+                <aligny>center</aligny>
+                <font>font_main_iconic</font>
+                <label>&#xf063;</label>
+                <textcolor>ff000000</textcolor>
+                <visible>Control.HasFocus(6102)</visible>
+                <visible>Container.SortDirection(Descending)</visible>
+            </control>
+        </control>

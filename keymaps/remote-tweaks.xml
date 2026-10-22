@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Playback key tweaks, tested on CoreELEC 22 (Ugoos AM9 Pro) with Arctic Fuse 3.
+     Copy to /storage/.kodi/userdata/keymaps/ and restart Kodi (or send the Kodi action reloadkeymaps, e.g. with kodi-send).
+
+     Up / Down during video  -> show the play bar (OSD) instead of skipping chapters / 10 minutes.
+     Back during video       -> stop playback (personal preference, delete these lines if you don't want it).
+
+     Two input types are needed: the box's own IR remote reaches Kodi as <keyboard> keys, while a TV remote
+     over HDMI-CEC arrives as <remote> buttons. With only one of them, the other remote keeps the default
+     (skip) behaviour. -->
+<keymap>
+  <FullscreenVideo>
+    <keyboard>
+      <up>OSD</up>
+      <down>OSD</down>
+      <escape>Stop</escape>
+      <backspace>Stop</backspace>
+      <browser_back>Stop</browser_back>
+    </keyboard>
+    <remote>
+      <up>OSD</up>
+      <down>OSD</down>
+      <back>Stop</back>
+    </remote>
+  </FullscreenVideo>
+</keymap>
