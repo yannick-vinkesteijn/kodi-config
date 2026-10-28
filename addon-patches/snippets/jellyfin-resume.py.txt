@@ -1,0 +1,14 @@
+            # AM9PRO 2026-10-17: Kodi has no resume point for episodes that were
+            # chained by Up Next / next-up (played as plain URLs), so it passes
+            # resume:false although the server holds a position. Resume from the
+            # server position then, unless Kodi has its own bookmark (= the user
+            # picked "play from beginning").
+            try:
+                _ticks = (item.get("UserData") or {}).get("PlaybackPositionTicks") or 0
+                _pct = xbmc.getInfoLabel("ListItem.PercentPlayed")
+                if not item["resumePlayback"] and _ticks and _pct in ("", "0"):
+                    item["resumePlayback"] = True
+                    LOG.info("[ resume ] Kodi has no bookmark, using server position %s", _ticks)
+            except Exception as e:
+                LOG.debug("resume fallback failed: %s", e)
+

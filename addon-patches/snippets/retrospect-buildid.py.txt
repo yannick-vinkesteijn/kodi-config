@@ -1,0 +1,7 @@
+    def process_folder_list(self, parent_item: Optional[MediaItem] = None) -> List[MediaItem]:
+        # AM9 tweak 2026-10-27: current Next.js build id. Saved links can hold an outdated build id (npo.nl redeploys), which gives a 404.
+        if parent_item is not None and parent_item.url and "/start/_next/data/" in parent_item.url:
+            import re
+            parent_item.url = re.sub(r"(/start/_next/data/)[^/]+(/)", lambda m: m.group(1) + self.build_version + m.group(2), parent_item.url, count=1)
+        return super().process_folder_list(parent_item)
+

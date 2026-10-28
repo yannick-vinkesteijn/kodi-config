@@ -4,6 +4,12 @@
 
      Up / Down during video  -> show the play bar (OSD) instead of skipping chapters / 10 minutes.
      Back during video       -> stop playback (personal preference, delete these lines if you don't want it).
+     Menu button (three stripes) -> open the Arctic Fuse 3 side panel (the Options window, id 1170); pressing it
+                               again closes it. Delete the <window1170> block and the two <menu> lines if you use another skin.
+     Home button             -> go to the Home screen.
+     Power button            -> short press = power off (ShutDown()), long press = Kodi's power menu (power off / reboot).
+                               On my box suspend never woke up again behind an HDMI switch, so I use a real power-off;
+                               swap ShutDown() for Suspend if sleep works for you.
 
      Two input types are needed: the box's own IR remote reaches Kodi as <keyboard> keys, while a TV remote
      over HDMI-CEC arrives as <remote> buttons. With only one of them, the other remote keeps the default
@@ -23,4 +29,27 @@
       <back>Stop</back>
     </remote>
   </FullscreenVideo>
+  <window1170>
+    <remote>
+      <menu>Back</menu>
+    </remote>
+    <keyboard>
+      <menu>Back</menu>
+    </keyboard>
+  </window1170>
+  <global>
+    <remote>
+      <start>ActivateWindow(Home)</start>
+      <menu>ActivateWindow(1170)</menu>
+      <power>ShutDown()</power>
+      <power mod="longpress">ActivateWindow(ShutdownMenu)</power>
+    </remote>
+    <keyboard>
+      <menu>ActivateWindow(1170)</menu>
+      <power>ShutDown()</power>
+      <power mod="longpress">ActivateWindow(ShutdownMenu)</power>
+      <power2>ShutDown()</power2>
+      <power2 mod="longpress">ActivateWindow(ShutdownMenu)</power2>
+    </keyboard>
+  </global>
 </keymap>

@@ -75,6 +75,43 @@ def osd_timer(text):
     return text
 
 
+def osd_timer3(num):
+    """Custom_11xx OSD pop-ups (playlist, cast, info, audio/subtitle/video streams): restart the auto-close timer when they close."""
+    block = ("    <!-- AM9PRO-OSDTIMER3 (2026-10-27): restart the OSD auto-close timer when this pop-up closes -->\n"
+             '    <include content="Action_OSD_SuspendAutoClose">\n'
+             '        <param name="window">%d</param>\n'
+             "    </include>\n" % num)
+    return insert_after_line("<defaultcontrol", block)
+
+
+def profile_button(text):
+    """Includes_ButtonMenu.xml: the Weather slot of the side panel shows the Kodi profile (picture + name); click = Switch user."""
+    old_head = '''    <include name="ButtonMenu_Weather">
+        <include content="ButtonMenu_Special_Button">
+            <param name="id">$PARAM[id]</param>
+            <param name="toplabel">$INFO[Weather.Temperature]</param>
+            <param name="sublabel">$INFO[Weather.Conditions]</param>
+            <param name="icon">$INFO[Weather.FanartCode,resource://resource.images.weathericons.white/,.png]</param>'''
+    new_head = '''    <!-- AM9PRO-USERBUTTON (2026-10-27): the Weather slot shows the active Kodi profile (image + name); click = Switch user -->
+    <variable name="AM9_ProfileIcon">
+        <value condition="!String.IsEmpty(System.ProfileThumb)">$INFO[System.ProfileThumb]</value>
+        <value>special://skin/extras/icons/address-card.png</value>
+    </variable>
+    <include name="ButtonMenu_Weather">
+        <include content="ButtonMenu_Special_Button">
+            <param name="id">$PARAM[id]</param>
+            <param name="toplabel">$INFO[System.ProfileName]</param>
+            <param name="sublabel">$LOCALIZE[31359]</param>
+            <param name="icon">$VAR[AM9_ProfileIcon]</param>'''
+    text = replace_once(old_head, new_head)(text)
+    return replace_once("                <onclick>ActivateWindow(1161)</onclick>",
+                        "                <onclick>ActivateWindow(1195)</onclick>")(text)
+
+
+OSD_POPUPS = [("1140", "Playlist"), ("1141", "Cast"), ("1145", "InfoPanel"),
+              ("1146", "AudioStreams"), ("1147", "SubtitleStreams"), ("1148", "VideoStreams")]
+
+
 RESUME_ONCLICK = ('<onclick condition="String.IsEqual(ListItem.DBType,movie) | '
                   'String.IsEqual(ListItem.DBType,episode)">PlayMedia($ESCINFO[ListItem.FileNameAndPath],resume)'
                   '</onclick> <!-- AM9PRO-RESUME-ALL -->')
@@ -126,6 +163,16 @@ PATCHES = [
                  "InProgressEpisodes.xsp</condition>"],
          fn=insert_after_line('<rules name="widget_custom_onclick">', snippet("widgets-resume-rules.xml")),
          after="rebuild", doc="Home rows Continue Watching / In-Progress / New Movies: click = resume"),
+    dict(id="profile-button", file="1080i/Includes_ButtonMenu.xml", checks=["AM9PRO-USERBUTTON", "ActivateWindow(1195)"],
+         fn=profile_button, after="reload",
+         doc="Side panel: the weather slot shows the Kodi profile (picture + name); click = Switch user"),
+]
+# one patch per Custom_11xx pop-up (generated)
+PATCHES += [
+    dict(id="osd-timer3-%s" % n, file="1080i/Custom_%s_OSD_%s.xml" % (n, name), checks=["AM9PRO-OSDTIMER3"],
+         fn=osd_timer3(int(n)), after="reload",
+         doc="Pop-up %s over the play bar (%s): restart the auto-close timer when it closes" % (n, name))
+    for n, name in OSD_POPUPS
 ]
 
 

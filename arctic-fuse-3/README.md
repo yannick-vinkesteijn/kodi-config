@@ -14,6 +14,8 @@ Nothing here is specific to that box: it works on any Kodi install that uses Arc
 | `wall-resume`, `row-resume`, `combined-resume`, `combined-wall-resume` | A **short press on a movie or episode resumes** where you left off (no "Resume from… / Play from beginning" prompt). **Long press** still opens Kodi's menu, where "Play from beginning" / "Reset resume position" live. Covers the poster wall, rows, and the seasons/episodes combined views. |
 | `home-row-resume` | Same for the home rows *Continue Watching*, *In-Progress* and *New Movies* (needs a skin rebuild, see below). |
 | `osd-timer`, `osd-timer2` | Fixes the **play bar staying on screen** after you open the subtitle / audio / video settings from it (the skin cancelled the auto-close timer and never restarted it). |
+| `osd-timer3-*` (one per pop-up) | The same fix for the pop-ups of the play bar itself (playlist, cast, info, audio / subtitle / video streams): the auto-close timer restarts when they close, so the bar no longer stays on screen after you back out of them. |
+| `profile-button` | The **weather slot of the side panel** shows the active Kodi **profile** (picture + name); clicking it opens *Switch user*. Handy with more than one profile. |
 
 `../keymaps/remote-tweaks.xml` makes **Up/Down during playback show the play bar** instead of skipping, for both the box's own remote (keyboard keys) and a TV remote over HDMI-CEC (`<remote>` buttons). Back = stop is a personal preference, delete it if you don't want it.
 
@@ -51,6 +53,8 @@ python3 /storage/af3-patches/patcher/af3_patch.py apply --only osd-timer   # jus
 * Patches are idempotent: running `apply` twice does nothing the second time.
 
 ### After a skin update
+(Short version: `sh ../reapply.sh status` / `apply`; the full routine with backups and rollback is in [`../UPDATING.md`](../UPDATING.md).)
+
 Updating Arctic Fuse 3 **replaces the skin files and removes every edit** (that is how I lost mine once). Set *Settings → System → Add-ons → Updates* to *Notify only* so it can't happen unannounced, then after you update by hand:
 
 1. `status` shows what is pending or `BROKEN`.
