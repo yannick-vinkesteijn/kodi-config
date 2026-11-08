@@ -7,6 +7,7 @@ My Kodi / CoreELEC configuration, tweaks and tools, kept per skin and per device
 | [`arctic-fuse-3/`](arctic-fuse-3/README.md) | A patch tool for the Arctic Fuse 3 skin: sort buttons, sideways poster wall, resume on short press, play bar fixes. Survives skin updates (re-apply with one command). |
 | [`addon-patches/`](addon-patches/README.md) | The same kind of tool for small edits to Retrospect (NPO), Jellyfin and KodiSeerr: re-applied after an add-on update, `BROKEN` instead of forcing when the add-on changed. |
 | [`UPDATING.md`](UPDATING.md) | **How to update add-ons without losing tweaks**: what survives, the backup / update / re-apply routine, rollback. `reapply.sh` runs both patch tools. |
+| [`backup/`](backup/README.md) | Weekly backup of the box's `/storage` pulled to a server over a read-only SSH key, with before/after backups around big changes and restore steps. |
 | [`keymaps/`](keymaps/remote-tweaks.xml) | Kodi key mappings: Up/Down show the play bar during playback for both an IR remote and a TV remote over HDMI-CEC. |
 | [`devices/`](devices/) | Notes per device (hardware, OS version, what was tested where). Currently: [Ugoos AM9 Pro](devices/ugoos-am9-pro/README.md). |
 
