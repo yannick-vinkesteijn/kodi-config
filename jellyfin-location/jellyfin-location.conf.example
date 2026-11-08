@@ -1,0 +1,8 @@
+# Copy to /storage/.config/jellyfin-location.conf and fill in.
+HOME_JELLYFIN=http://<lan-ip>:8096
+AWAY_JELLYFIN=https://jellyfin.example.org
+# "Id" from http://<lan ip>:8096/System/Info/Public
+SERVER_ID=0123456789abcdef0123456789abcdef
+# Optional: KodiSeerr
+HOME_SEERR=http://<lan-ip>:5055
+AWAY_SEERR=https://seerr.example.org
