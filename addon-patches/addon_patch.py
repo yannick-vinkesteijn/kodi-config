@@ -71,12 +71,8 @@ DESC_NEW = ('            item.description = ", ".join(g["name"] for g in (result
 
 PATCHES = [
     dict(id="retrospect-genres", file=NOS, checks=["AM9 tweak 2026-10-27: genre names instead of NPO image labels"],
-         fn=replace_n(DESC_OLD, DESC_NEW, 3), tested="Retrospect 5.7.39",
+         fn=replace_n(DESC_OLD, DESC_NEW, 3), tested="Retrospect 5.7.39, 5.7.40",
          doc="NPO: the description under a programme is its genres (Retrospect shows an image label otherwise)"),
-    dict(id="retrospect-buildid", file=NOS, checks=["AM9 tweak 2026-10-27: current Next.js build"],
-         fn=insert_before_line("    def extract_nextjs_data(self", snippet("retrospect-buildid.py.txt")),
-         tested="Retrospect 5.7.39",
-         doc="NPO: saved links with an outdated site build id (npo.nl redeploys) no longer give an empty page"),
     dict(id="jellyfin-resume", file="plugin.video.jellyfin/jellyfin_kodi/entrypoint/default.py",
          checks=["AM9PRO 2026-10-17"],
          fn=insert_before_line("            Actions(server, api_client).play(", snippet("jellyfin-resume.py.txt")),
