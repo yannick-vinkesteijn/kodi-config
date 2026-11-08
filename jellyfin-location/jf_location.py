@@ -10,6 +10,8 @@ posters and playback pointing at the old address. This rewrites all of them.
                                    right server id, otherwise away
     jf_location.py home|away       force one
     jf_location.py --dry-run ...   show what would change
+    The side panel tile (menu.py) can pin auto to home or away; that choice
+    is kept in /storage/.config/jellyfin-location.mode.
 
 Kodi must NOT be running for auto/home/away (it keeps settings in memory and
 writes them back on exit). Meant to run as ExecStartPre of kodi.service; to
@@ -25,6 +27,8 @@ Settings: /storage/.config/jellyfin-location.conf (KEY=value lines):
 import glob, json, os, re, shutil, sqlite3, sys, time, urllib.request
 
 CONF = os.environ.get("JF_LOCATION_CONF", "/storage/.config/jellyfin-location.conf")
+# auto | home | away, set from the Kodi side panel (menu.py); survives restarts
+MODE_FILE = os.environ.get("JF_LOCATION_MODE", "/storage/.config/jellyfin-location.mode")
 USERDATA = os.environ.get("KODI_USERDATA", "/storage/.kodi/userdata")
 BACKUPS = os.environ.get("JF_LOCATION_BACKUPS", "/storage/backup-jellyfin-location")
 KEEP_BACKUPS = 3
@@ -71,24 +75,52 @@ def pairs(conf, target):
 
 # --- detection -----------------------------------------------------------
 def lan_server_ok(conf, wait):
-    """True if the LAN URL answers with our server id. Waits up to `wait`
-    seconds for the network to come up (Wi-Fi can be slow at boot)."""
+    """True if the LAN URL answers with our server id within `wait` s."""
     deadline = time.time() + wait
     while True:
         try:
-            with urllib.request.urlopen(conf["HOME_JELLYFIN"] + "/System/Info/Public", timeout=3) as r:
+            with urllib.request.urlopen(conf["HOME_JELLYFIN"] + "/System/Info/Public", timeout=2) as r:
                 return json.load(r).get("Id") == conf["SERVER_ID"]
         except Exception:
             if time.time() >= deadline:
                 return False
-            time.sleep(2)
+            time.sleep(1)
 
-def has_default_route():
+def own_networks():
+    """IPv4 networks of this box's interfaces (lo excluded), via `ip`."""
+    import ipaddress, subprocess
     try:
-        with open("/proc/net/route") as f:
-            return any(l.split()[1] == "00000000" for l in f.readlines()[1:])
+        out = subprocess.run(["ip", "-4", "-o", "addr", "show"], capture_output=True, text=True).stdout
     except OSError:
-        return True
+        return None
+    nets = []
+    for m in re.finditer(r"^\d+:\s+(\S+)\s+inet\s+(\S+)", out, re.M):
+        if m.group(1) != "lo":
+            nets.append(ipaddress.ip_interface(m.group(2)).network)
+    return nets
+
+def detect(conf):
+    """'home', 'away' or None (no network). Fast: only probes the server when
+    the box is in the same subnet as the home server."""
+    import ipaddress, urllib.parse
+    host = urllib.parse.urlparse(conf["HOME_JELLYFIN"]).hostname
+    try:
+        home_ip = ipaddress.ip_address(host)
+    except ValueError:
+        home_ip = None                      # a hostname: just probe it
+    deadline = time.time() + 20             # wait for Wi-Fi to get an address
+    while True:
+        nets = own_networks()
+        if nets is None or home_ip is None:
+            return "home" if lan_server_ok(conf, 8) else "away"
+        if nets:
+            break
+        if time.time() >= deadline:
+            return None
+        time.sleep(1)
+    if not any(home_ip in n for n in nets):
+        return "away"                       # other network: no need to ask
+    return "home" if lan_server_ok(conf, 3) else "away"
 
 # --- status --------------------------------------------------------------
 def count(conf):
@@ -109,6 +141,23 @@ def count(conf):
                                    (conf[side.upper() + "_JELLYFIN"] + "%",)).fetchone()[0]
         c.close()
     return res
+
+def read_mode():
+    try:
+        m = open(MODE_FILE).read().strip()
+    except OSError:
+        return "auto"
+    return m if m in ("auto", "home", "away") else "auto"
+
+def write_mode(mode):
+    tmp = MODE_FILE + ".tmp"
+    with open(tmp, "w") as f:
+        f.write(mode + "\n")
+    os.replace(tmp, MODE_FILE)
+
+def current(conf):
+    c = count(conf)
+    return "home" if c["home"] and not c["away"] else "away" if c["away"] and not c["home"] else "mixed"
 
 def kodi_running():
     for p in glob.glob("/proc/[0-9]*/comm"):
@@ -195,17 +244,20 @@ def main(argv):
 
     if mode == "status":
         c = count(conf)
-        where = "home" if c["home"] and not c["away"] else "away" if c["away"] and not c["home"] else "mixed"
-        log("now: %s (%d home refs, %d away refs); LAN server reachable: %s"
-            % (where, c["home"], c["away"], lan_server_ok(conf, 0)))
+        log("now: %s (%d home refs, %d away refs); mode: %s; detected: %s"
+            % (current(conf), c["home"], c["away"], read_mode(), detect(conf)))
         return
 
+    if mode == "auto" and read_mode() != "auto":
+        mode = read_mode()
+        log("mode fixed to %s (side panel), not detecting" % mode)
     if mode == "auto":
-        if not has_default_route() and not lan_server_ok(conf, 20):
-            log("no network yet, leaving settings as they are")
+        t0 = time.time()
+        target = detect(conf)
+        if target is None:
+            log("no network after 20 s, leaving settings as they are")
             return
-        target = "home" if lan_server_ok(conf, 15) else "away"
-        log("detected: %s" % target)
+        log("detected: %s (%.1f s)" % (target, time.time() - t0))
     else:
         target = mode
 
